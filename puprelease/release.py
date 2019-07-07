@@ -85,7 +85,7 @@ class Command:
 def git_tag_command(new_version):
     msg = f"Version {new_version}"
     return Command(
-        title="Step 1 - Create tag",
+        title="Create tag",
         args=("git", "tag", "-a", new_version, "--message", msg),
         description=(
             """Create a git tag on the current commit. (Option "-a" makes an
@@ -97,19 +97,18 @@ def git_tag_command(new_version):
 
 def revert_tag_command(new_version):
     return Command(
-        title="Revert Step 1 - Remove tag",
-        args=("git", "tag", "-d", new_version),
+        title="Remove newly created tag", args=("git", "tag", "-d", new_version)
     )
 
 
 push_tag_command = Command(
-    title="Step 2 - Push tag",
+    title="Push tag",
     args=("git", "push", "--tags"),
     description="Push tag to public source code repository.",
 )
 
 create_dists_command = Command(
-    title="Step 3 - Create distributions",
+    title="Create distributions",
     args=("python", "setup.py", "bdist_wheel", "sdist"),
     description=(
         """Create two package distributions in "dist/": a built
@@ -123,7 +122,7 @@ create_dists_command = Command(
 )
 
 publish_command = Command(
-    title="Step 4 - Publish release",
+    title="Publish release",
     args=("twine", "upload", "dist/*"),
     description=(
         f'Upload new release to PyPI, using account "{PyPI_user}".'
