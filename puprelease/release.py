@@ -3,7 +3,7 @@ from os import getenv
 from subprocess import check_output, list2cmdline, run
 from typing import Optional, Sequence
 
-from click import confirm, prompt
+from click import confirm, prompt, Choice
 
 from puprelease.util import (
     ExitSignal,
@@ -11,6 +11,7 @@ from puprelease.util import (
     MAX_LINEWIDTH,
     echo,
     print_header,
+    rewrap,
 )
 
 
@@ -21,18 +22,25 @@ PyPI_user = getenv("TWINE_USERNAME")
 def new_release():
     print_header("Preparing new release")
     confirm("Did you run testsuite locally?", default=True, abort=True)
-    desired_new_version = prompt("Please enter the new version number")
-    git_tag_command(desired_new_version).check_and_run()
-    worktree_version = get_worktree_version()
-    echo()
-    echo(f'Version of package in worktree is now: "{worktree_version}"')
-    if worktree_version != desired_new_version:
-        echo("This does not match the desired new version")
-        echo("Removing added tag and quitting")
-        revert_tag_command(desired_new_version).run()
-        raise ExitSignal
-    for command in release_commands:
-        command.check_and_run()
+    question = rewrap(
+        """Do you version using git-tags (i.e. using setuptools_scm), or do
+            you set the version in "setup.py"?"""
+    )
+    method = prompt(question, type=Choice(["git", "setup"]), default="git")
+    if method == "git":
+        desired_new_version = prompt("Please enter the new version number")
+        git_tag_command(desired_new_version).check_and_run()
+        worktree_version = get_worktree_version()
+        echo()
+        echo(f'Version of package in worktree is now: "{worktree_version}"')
+        if worktree_version != desired_new_version:
+            echo("This does not match the desired new version")
+            echo("Removing added tag and quitting")
+            revert_tag_command(desired_new_version).run()
+            raise ExitSignal
+        push_tag_command.check_and_run()
+    create_dists_command.check_and_run()
+    publish_command.check_and_run()
     echo("Congrats on the new release")
 
 
@@ -85,34 +93,34 @@ def revert_tag_command(new_version):
     )
 
 
-release_commands = (
-    Command(
-        title="Step 2 - Push tag",
-        args=("git", "push", "--tags"),
-        description="Push tag to public source code repository.",
-    ),
-    Command(
-        title="Step 3 - Create distributions",
-        args=("python", "setup.py", "bdist_wheel", "sdist"),
-        description=(
-            """Create two package distributions in "dist/": a built
+push_tag_command = Command(
+    title="Step 2 - Push tag",
+    args=("git", "push", "--tags"),
+    description="Push tag to public source code repository.",
+)
+
+create_dists_command = Command(
+    title="Step 3 - Create distributions",
+    args=("python", "setup.py", "bdist_wheel", "sdist"),
+    description=(
+        """Create two package distributions in "dist/": a built
             distribution and a source distribution. (The source distribution
             includes the project's top-level directory, and requires running
             "setup.py" on each "pip install" -- i.e. requires a full build. The
             built distribution on the other hand only requires moving files on
             "pip install", and includes only source files from the package
             directory.)"""
-        ),
     ),
-    Command(
-        title="Step 4 - Publish release",
-        args=("twine", "upload", "dist/*"),
-        description=(
-            f'Upload new release to PyPI, using account "{PyPI_user}".'
-            if PyPI_user
-            else """Upload new release to PyPI. Login details will be prompted
+)
+
+publish_command = Command(
+    title="Step 4 - Publish release",
+    args=("twine", "upload", "dist/*"),
+    description=(
+        f'Upload new release to PyPI, using account "{PyPI_user}".'
+        if PyPI_user
+        else """Upload new release to PyPI. Login details will be prompted
             for. (Note: these can also be set via the TWINE_USERNAME and
             TWINE_PASSWORD environment variables)."""
-        ),
     ),
 )

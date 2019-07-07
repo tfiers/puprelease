@@ -1,14 +1,15 @@
 import click
 from puprelease.check import check_package
 from puprelease.release import new_release
-from puprelease.util import echo, print_own_version, ExitSignal
+from puprelease.util import ExitSignal, echo, print_own_version
 
 
 @click.command()
 def pup():
     """
-    Note: this program can be safely stopped at any time. The release steps are
-    idempotent.
+    By default, assumes package version is determined based on git tags (i.e.
+    using setuptools_scm). This program can be safely stopped at any time: the
+    release steps are idempotent.
     """
     try:
         print_own_version()
