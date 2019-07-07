@@ -1,17 +1,16 @@
+from ast import keyword, parse, walk
 from dataclasses import dataclass
 from os import getenv
 from subprocess import check_output, list2cmdline, run
 from typing import Optional, Sequence
 
-from click import confirm, prompt, Choice
-
+from click import confirm, prompt
 from puprelease.util import (
     ExitSignal,
     KeyValueTable,
     MAX_LINEWIDTH,
     echo,
     print_header,
-    rewrap,
 )
 
 
@@ -22,12 +21,7 @@ PyPI_user = getenv("TWINE_USERNAME")
 def new_release():
     print_header("Preparing new release")
     confirm("Did you run testsuite locally?", default=True, abort=True)
-    question = rewrap(
-        """Do you version using git-tags (i.e. using setuptools_scm), or do
-            you set the version in "setup.py"?"""
-    )
-    method = prompt(question, type=Choice(["git", "setup"]), default="git")
-    if method == "git":
+    if is_versioned_with_git_tags():
         desired_new_version = prompt("Please enter the new version number")
         git_tag_command(desired_new_version).check_and_run()
         worktree_version = get_worktree_version()
@@ -42,6 +36,21 @@ def new_release():
     create_dists_command.check_and_run()
     publish_command.check_and_run()
     echo("Congrats on the new release")
+
+
+def is_versioned_with_git_tags() -> bool:
+    """
+    Is the package versioned using git-tags (i.e. using setuptools_scm), or is
+    the version set in "setup.py"?
+    """
+    # Check whether a function call keyword argument of the type
+    # "use_scm_version=" appears somewhere in setup.py. Method is not
+    # foolproof; But more than good enough.
+    with open("setup.py") as f:
+        src = f.read()
+    tree = parse(src)
+    kwargs = [node.arg for node in walk(tree) if type(node) == keyword]
+    return "use_scm_version" in kwargs
 
 
 def get_worktree_version():

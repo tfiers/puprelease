@@ -7,9 +7,8 @@ from puprelease.util import ExitSignal, echo, print_own_version
 @click.command()
 def pup():
     """
-    By default, assumes package version is determined based on git tags (i.e.
-    using setuptools_scm). This program can be safely stopped at any time: the
-    release steps are idempotent.
+    This program can be safely stopped at any time: the release steps are
+    idempotent.
     """
     try:
         print_own_version()
