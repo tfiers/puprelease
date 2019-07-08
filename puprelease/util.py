@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from re import sub
+from subprocess import check_output
 from textwrap import fill
-from typing import Optional
+from typing import Optional, Sequence
 from warnings import warn
 
 import click
@@ -24,6 +25,11 @@ def echo(
     if not raw:
         message = rewrap(message, width=max_linewidth)
     click.echo(message, nl=newline)
+
+
+def get_stripped_output(cmd: Sequence[str]) -> str:
+    output: bytes = check_output(cmd)
+    return output.decode().strip()
 
 
 def print_own_version():

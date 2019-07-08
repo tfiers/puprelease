@@ -1,17 +1,12 @@
 from ast import keyword, parse, walk
 from dataclasses import dataclass
 from os import getenv
-from subprocess import check_output, list2cmdline, run
+from subprocess import list2cmdline, run
 from typing import Optional, Sequence
 
 from click import confirm, prompt
-from puprelease.util import (
-    ExitSignal,
-    KeyValueTable,
-    MAX_LINEWIDTH,
-    echo,
-    print_header,
-)
+from puprelease.util import (ExitSignal, KeyValueTable, MAX_LINEWIDTH, echo,
+                             get_stripped_output, print_header)
 
 
 table = KeyValueTable(key_column_width=13, total_width=MAX_LINEWIDTH)
@@ -23,7 +18,11 @@ def new_release():
     confirm("Did you run testsuite locally?", default=True, abort=True)
     if is_versioned_with_git_tags():
         desired_new_version = prompt("Please enter the new version number")
-        git_tag_command(desired_new_version).check_and_run()
+        message = prompt(
+            "Please enter a message to go along with the git tag",
+            default=get_last_commit_message(),
+        )
+        git_tag_command(desired_new_version, message).check_and_run()
         worktree_version = get_worktree_version()
         echo()
         echo(f'Version of package in worktree is now: "{worktree_version}"')
@@ -49,13 +48,18 @@ def is_versioned_with_git_tags() -> bool:
     with open("setup.py") as f:
         src = f.read()
     tree = parse(src)
-    kwargs = [node.arg for node in walk(tree) if type(node) == keyword]
-    return "use_scm_version" in kwargs
+    all_kwargs_in_setup_py = [
+        node.arg for node in walk(tree) if type(node) == keyword
+    ]
+    return "use_scm_version" in all_kwargs_in_setup_py
 
 
 def get_worktree_version():
-    output: bytes = check_output(("python", "setup.py", "--version"))
-    return output.decode().strip()
+    return get_stripped_output(("python", "setup.py", "--version"))
+
+
+def get_last_commit_message():
+    return get_stripped_output(("git", "log", "-1", "--pretty=%B"))
 
 
 @dataclass
@@ -82,11 +86,10 @@ class Command:
             echo(f"Command completed with return code {retcode}")
 
 
-def git_tag_command(new_version):
-    msg = f"Version {new_version}"
+def git_tag_command(new_version, message):
     return Command(
         title="Create tag",
-        args=("git", "tag", "-a", new_version, "--message", msg),
+        args=("git", "tag", "-a", new_version, "--message", message),
         description=(
             """Create a git tag on the current commit. (Option "-a" makes an
             "annotated" tag, which includes tagger name, email, date, a custom
@@ -123,7 +126,7 @@ create_dists_command = Command(
 
 publish_command = Command(
     title="Publish release",
-    args=("twine", "upload", "dist/*"),
+    args=("twine", "upload", "dist/*", "--skip-existing"),
     description=(
         f'Upload new release to PyPI, using account "{PyPI_user}".'
         if PyPI_user

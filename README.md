@@ -7,7 +7,7 @@ Publishing a new version of your Python package has never been easier:
 
 ## Installation
 ```
-pip install puprelease
+$ pip install puprelease
 ```
 This will get you the
 [![latest version on PyPI](https://img.shields.io/pypi/v/puprelease.svg?label=latest%20version%20on%20PyPI:)](https://pypi.python.org/pypi/puprelease/)
@@ -16,7 +16,7 @@ This will get you the
 In the root directory of the package you want to release a new version of
 (where your `setup.py` file is located):
 ```
-pup
+$ pup
 ```
 Then follow along with the program.
 
@@ -27,7 +27,7 @@ versions.
 
 To do this, add the following lines to your `setup.py`, replacing the
 `version=...` argument of the `setup()` call:
-```
+```py
 setup(
     ...
     use_scm_version=True,

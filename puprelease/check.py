@@ -1,8 +1,12 @@
 from os import getcwd
 from os.path import exists
-from subprocess import check_output
 
-from puprelease.util import ExitSignal, KeyValueTable, print_header
+from puprelease.util import (
+    ExitSignal,
+    KeyValueTable,
+    get_stripped_output,
+    print_header,
+)
 from requests import get
 
 
@@ -22,8 +26,7 @@ def check_setup_py():
     table.print_row("Working directory", getcwd())
     if not exists("setup.py"):
         raise ExitSignal('Working directory does not contain a "setup.py" file')
-    output: bytes = check_output(("python", "setup.py", "--fullname"))
-    fullname = output.decode().strip()
+    fullname = get_stripped_output(["python", "setup.py", "--fullname"])
     package_name, version = fullname.split("-", maxsplit=1)
     table.print_row("Package name", package_name)
     table.print_row('Version in working dir (via "setup.py")', version)
@@ -32,8 +35,7 @@ def check_setup_py():
 
 def check_pip_installed(package_name):
     # Note: using pip's internal API to get this info is (too) convoluted.
-    out: bytes = check_output(("pip", "list"))
-    lines = out.decode().splitlines()
+    lines = get_stripped_output(("pip", "list")).splitlines()
     try:
         line = next(line for line in lines if line.startswith(package_name))
         _, version, *_ = line.split()
@@ -72,6 +74,8 @@ def git_worktree_is_clean():
     # "setuptools_scm.git.GitWorkdir.is_dirty") is empty when no uncommited
     # files are present in the git working tree.
     cmd = ("git", "status", "--porcelain", "--untracked-files=no")
-    out: bytes = check_output(cmd)
-    uncommited = out.decode().strip()
-    return not uncommited
+    output = get_stripped_output(cmd)
+    if not output:
+        return True
+    else:
+        return True
