@@ -75,7 +75,4 @@ def git_worktree_is_clean():
     # files are present in the git working tree.
     cmd = ("git", "status", "--porcelain", "--untracked-files=no")
     output = get_stripped_output(cmd)
-    if not output:
-        return True
-    else:
-        return True
+    return not output
