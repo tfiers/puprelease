@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 GITHUB_URL = "https://github.com/tfiers/puprelease"
 
-with open("README.md", mode="r") as f:
+with open("ReadMe.md", mode="r") as f:
     readme = f.read()
 
 setup(
@@ -23,6 +23,10 @@ setup(
     entry_points={"console_scripts": ["pup=puprelease.pup:pup"]},
     packages=find_packages(),
     install_requires=["click ~=7.0", "requests ~=2.0"],
-    use_scm_version=True,  # Get package version from git tags
+    # Get package version from git tags
     setup_requires=["setuptools_scm"],
+    use_scm_version={
+        "version_scheme": "post-release",
+        "local_scheme": "dirty-tag",
+    },
 )

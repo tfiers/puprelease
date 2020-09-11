@@ -30,11 +30,15 @@ To do this, add the following lines to your `setup.py`, replacing the
 ```py
 setup(
     ...
-    use_scm_version=True,
     setup_requires=["setuptools_scm"],
+    use_scm_version={
+        "version_scheme": "post-release",
+        "local_scheme": "dirty-tag",
+    },  # Example configuration.
+        # See the docs [*] for other options.
 )
 ```
-(See also the [*setuptools_scm* documentation](https://github.com/pypa/setuptools_scm/)).
+`[*]` [*setuptools_scm* documentation](https://github.com/pypa/setuptools_scm/).
 
 Then call `pup`, which will take care of the rest, for each new release.
 
