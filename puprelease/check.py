@@ -26,9 +26,9 @@ def check_setup_py():
     table.print_row("Working directory", getcwd())
     if not exists("setup.py"):
         raise ExitSignal('Working directory does not contain a "setup.py" file')
-    fullname = get_stripped_output(["python", "setup.py", "--fullname"])
-    package_name, version = fullname.split("-", maxsplit=1)
+    package_name = get_stripped_output(["python", "setup.py", "--name"])
     table.print_row("Package name", package_name)
+    version = get_stripped_output(["python", "setup.py", "--version"])
     table.print_row('Version in working dir (via "setup.py")', version)
     return package_name
 
