@@ -8,6 +8,7 @@ from puprelease.util import ExitSignal, echo, print_own_version
 def pup():
     try:
         print_own_version()
+        echo()
         echo(
             "This program can be safely stopped and restarted at any time: "
             "the release steps are idempotent."
