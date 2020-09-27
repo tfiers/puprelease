@@ -11,7 +11,7 @@ from puprelease.util import (
     MAX_LINEWIDTH,
     echo,
     get_stripped_output,
-    step_title_printer
+    step_title_printer,
 )
 
 
