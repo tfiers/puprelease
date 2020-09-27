@@ -24,7 +24,7 @@ def echo(
 ):
     if not raw:
         message = rewrap(message, width=max_linewidth)
-    click.echo(message, nl=newline)
+    click.secho(message, nl=newline, fg="yellow")
 
 
 def get_stripped_output(cmd: Sequence[str]) -> str:
@@ -56,7 +56,7 @@ def print_header(header: str):
 class KeyValueTable:
     """
     An asynchronously printed, two column table.
-    
+
     "key_column_width" should be at least as large as the longest key, plus the
     length of the separator.
     """
@@ -83,8 +83,8 @@ class KeyValueTable:
 
 
 def rewrap(multiline: str, width=70, **TextWrap_kwargs) -> str:
-    """ Linearize string, and wrap the result.
-    
+    """Linearize string, and wrap the result.
+
     :param multiline:  A multiline string as found in indented source code.
     :param width:  Max number of characters per line in the output.
     :param TextWrap_kwargs:  Keyword arguments passed to textwrap.TextWrap
