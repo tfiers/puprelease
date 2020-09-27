@@ -6,12 +6,12 @@ from puprelease.util import ExitSignal, echo, print_own_version
 
 @click.command()
 def pup():
-    """
-    This program can be safely stopped at any time: the release steps are
-    idempotent.
-    """
     try:
         print_own_version()
+        echo(
+            "This program can be safely stopped and restarted at any time: "
+            "the release steps are idempotent."
+        )
         check_package()
         new_release()
     except click.Abort:
