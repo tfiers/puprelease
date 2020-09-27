@@ -5,8 +5,14 @@ from subprocess import list2cmdline, run
 from typing import Optional, Sequence
 
 from click import confirm, prompt
-from puprelease.util import (ExitSignal, KeyValueTable, MAX_LINEWIDTH, echo,
-                             get_stripped_output, print_header)
+from puprelease.util import (
+    ExitSignal,
+    KeyValueTable,
+    MAX_LINEWIDTH,
+    echo,
+    get_stripped_output,
+    step_title_printer
+)
 
 
 table = KeyValueTable(key_column_width=13, total_width=MAX_LINEWIDTH)
@@ -14,7 +20,7 @@ PyPI_user = getenv("TWINE_USERNAME")
 
 
 def new_release():
-    print_header("Preparing new release")
+    step_title_printer.step("Preparing new release")
     confirm("Did you run testsuite locally?", default=True, abort=True)
     if is_versioned_with_git_tags():
         desired_new_version = prompt("Please enter the new version number")
@@ -48,9 +54,7 @@ def is_versioned_with_git_tags() -> bool:
     with open("setup.py", mode="r", encoding="utf-8") as f:
         src = f.read()
     tree = parse(src)
-    all_kwargs_in_setup_py = [
-        node.arg for node in walk(tree) if type(node) == keyword
-    ]
+    all_kwargs_in_setup_py = [node.arg for node in walk(tree) if type(node) == keyword]
     return "use_scm_version" in all_kwargs_in_setup_py
 
 
@@ -69,7 +73,7 @@ class Command:
     description: Optional[str] = None
 
     def check_and_run(self):
-        print_header(self.title)
+        step_title_printer.step(self.title)
         table.print_row("Command", list2cmdline(self.args))
         if self.description:
             table.print_row("Description", self.description)

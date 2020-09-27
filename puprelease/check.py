@@ -5,7 +5,7 @@ from puprelease.util import (
     ExitSignal,
     KeyValueTable,
     get_stripped_output,
-    print_header,
+    step_title_printer
 )
 from requests import get
 
@@ -15,7 +15,7 @@ table = KeyValueTable(key_column_width=42)
 
 def check_package():
     """ Display existing package versions, inter alia. """
-    print_header(f"Inspecting Python package")
+    step_title_printer.step(f"Inspecting Python package")
     package_name = check_setup_py()
     check_pip_installed(package_name)
     check_pypi(package_name)

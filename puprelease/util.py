@@ -45,11 +45,20 @@ def print_own_version():
     # fmt: on
 
 
-def print_header(header: str):
-    """ Underline the given string and prefix with a blank line. """
-    echo()
-    echo(header)
-    echo("-" * len(header))
+class StepTitlePrinter:
+    def __init__(self):
+        self.step_count = 1
+
+    def step(self, step_title: str):
+        """ Print a blank line, the step title (auto-numbered), and an underline """
+        echo()
+        header = f"Step {self.step_count}: {step_title}"
+        echo(header)
+        echo("-" * len(header))
+        self.step_count += 1
+
+
+step_title_printer = StepTitlePrinter()
 
 
 @dataclass
