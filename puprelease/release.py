@@ -45,7 +45,7 @@ def is_versioned_with_git_tags() -> bool:
     # Check whether a function call keyword argument of the type
     # "use_scm_version=" appears somewhere in setup.py. Method is not
     # foolproof; But more than good enough.
-    with open("setup.py") as f:
+    with open("setup.py", mode="r", encoding="utf-8") as f:
         src = f.read()
     tree = parse(src)
     all_kwargs_in_setup_py = [
