@@ -28,14 +28,15 @@ def new_release():
             "Please enter a message to go along with the git tag",
             default=get_last_commit_message(),
         )
-        git_tag_command(desired_new_version, message).check_and_run()
+        new_git_tag = f"v{desired_new_version}"
+        git_tag_command(new_git_tag, message).check_and_run()
         worktree_version = get_worktree_version()
         echo()
         echo(f'Version of package in worktree is now: "{worktree_version}"')
         if worktree_version != desired_new_version:
             echo("This does not match the desired new version")
             echo("Removing added tag and quitting")
-            revert_tag_command(desired_new_version).run()
+            revert_tag_command(new_git_tag).run()
             raise ExitSignal
         push_tag_command.check_and_run()
     create_dists_command.check_and_run()
