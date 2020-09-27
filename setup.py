@@ -22,7 +22,7 @@ setup(
     ],
     entry_points={"console_scripts": ["pup=puprelease.pup:pup"]},
     packages=find_packages(),
-    install_requires=["click ~=7.0", "requests ~=2.0", "twine"],
+    install_requires=["click ~=7.0", "requests ~=2.0", "twine", "setuptools_scm"],
     # Get package version from git tags
     setup_requires=["setuptools_scm"],
     use_scm_version={
