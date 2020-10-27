@@ -24,11 +24,11 @@ setup(
     packages=find_packages("src"),
     package_dir={"": "src"},  # (`""` is the "root" package).
     install_requires=[
-        "click ~= 7.0",
+        "click ~= 7.1",
         "requests ~= 2.0",
         "twine",
         "setuptools_scm",
-        "colorama",  # Only needed on Windows.
+        "colorama; platform_system == 'Windows'",
     ],
     # Get package version from git tags
     setup_requires=["setuptools_scm"],
