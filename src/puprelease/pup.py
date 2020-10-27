@@ -7,7 +7,7 @@ from puprelease import __version__
 
 
 @click.command()
-def pup():
+def cli():
     try:
         echo(f"This is puprelease version {__version__}")
         echo()
@@ -25,7 +25,3 @@ def pup():
             echo()
             echo(sig.message)
     echo("Exiting")
-
-
-if __name__ == "__main__":
-    pup()

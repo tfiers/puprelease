@@ -20,7 +20,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
-    entry_points={"console_scripts": ["pup=puprelease.pup:pup"]},
+    entry_points={"console_scripts": ["pup=puprelease.pup:cli"]},
     packages=find_packages("src"),
     package_dir={"": "src"},  # (`""` is the "root" package).
     install_requires=[
