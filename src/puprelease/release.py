@@ -16,13 +16,17 @@ from puprelease.util import (
 )
 
 
-table = KeyValueTable(key_column_width=13, total_width=MAX_LINEWIDTH)
+command_description_table = KeyValueTable(
+    key_column_width=13,
+    total_width=MAX_LINEWIDTH,
+)
+
 PyPI_user = getenv("TWINE_USERNAME")
 
 
 def new_release():
     step_title_printer.step("Preparing new release")
-    
+
     confirm("Did you run testsuite locally?", default=True, abort=True)
 
     if is_versioned_with_git_tags():

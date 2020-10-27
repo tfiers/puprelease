@@ -5,12 +5,12 @@ from puprelease.util import (
     ExitSignal,
     KeyValueTable,
     get_stripped_output,
-    step_title_printer
+    step_title_printer,
 )
 from requests import get
 
 
-table = KeyValueTable(key_column_width=42)
+package_info_table = KeyValueTable(key_column_width=42)
 
 
 def check_package():
@@ -23,13 +23,13 @@ def check_package():
 
 
 def check_setup_py():
-    table.print_row("Working directory", getcwd())
+    package_info_table.print_row("Working directory", getcwd())
     if not exists("setup.py"):
         raise ExitSignal('Working directory does not contain a "setup.py" file')
     package_name = get_stripped_output(["python", "setup.py", "--name"])
-    table.print_row("Package name", package_name)
+    package_info_table.print_row("Package name", package_name)
     version = get_stripped_output(["python", "setup.py", "--version"])
-    table.print_row('Version in working dir (via "setup.py")', version)
+    package_info_table.print_row('Version in working dir (via "setup.py")', version)
     return package_name
 
 
@@ -41,7 +41,7 @@ def check_pip_installed(package_name):
         _, version, *_ = line.split()
     except StopIteration:
         version = "[not pip-installed]"
-    table.print_row("System-wide version, installed with pip", version)
+    package_info_table.print_row("System-wide version, installed with pip", version)
 
 
 def check_pypi(package_name):
@@ -52,7 +52,7 @@ def check_pypi(package_name):
         version = "[not yet published on pypi.org]"
     else:
         response.raise_for_status()
-    table.print_row("Latest version on pypi.org", version)
+    package_info_table.print_row("Latest version on pypi.org", version)
 
 
 def check_git_worktree():
@@ -61,7 +61,7 @@ def check_git_worktree():
         status = "Clean (no uncommited changes)"
     else:
         status = "Dirty (uncommited changes)"
-    table.print_row("Git working tree status", status)
+    package_info_table.print_row("Git working tree status", status)
     if not clean:
         raise ExitSignal(
             """Please commit or stash working tree changes before making a new
