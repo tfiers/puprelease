@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 from re import sub
 from subprocess import check_output
 from textwrap import fill
@@ -11,6 +12,11 @@ import click
 MAX_LINEWIDTH = 75
 
 
+class StringColor(Enum):
+    HARDCODED = "yellow"
+    DYNAMIC = "black"
+
+
 @dataclass
 class ExitSignal(Exception):
     message: Optional[str] = None
@@ -18,13 +24,33 @@ class ExitSignal(Exception):
 
 def echo(
     message: str = "",
-    newline: bool = True,
-    raw: bool = False,
+    newline=True,
+    raw=False,
     max_linewidth: int = MAX_LINEWIDTH,
+    color: StringColor = StringColor.HARDCODED,
 ):
+    """
+    If `raw` is True, do not strip/linearize/wrap the `message` string before printing.
+    """
     if not raw:
         message = rewrap(message, width=max_linewidth)
-    click.secho(message, nl=newline, fg="yellow")
+    click.secho(message, nl=newline, fg=color.value)
+
+
+def confirm(text: str, default=False, abort=False, **kwargs):
+    coloured_text = click.style(text, fg=StringColor.HARDCODED.value)
+    return click.confirm(coloured_text, default, abort, **kwargs)
+
+
+confirm.__doc__ = click.confirm.__doc__
+
+
+def prompt(text: str, default=None, **kwargs):
+    coloured_text = click.style(text, fg=StringColor.HARDCODED.value)
+    return click.prompt(coloured_text, default, **kwargs)
+
+
+prompt.__doc__ = click.prompt.__doc__
 
 
 def get_stripped_output(cmd: Sequence[str]) -> str:
@@ -61,25 +87,33 @@ class KeyValueTable:
     total_width: Optional[int] = None
     separator = ": "
 
-    def print_row(self, key: str, value: str):
+    def print_row(
+        self, key: str, value: str, value_color: StringColor = StringColor.DYNAMIC
+    ):
         key_cell = key + self.separator
         if self.key_column_width < len(key_cell):
-            warn(f"key_column_width should be at least {len(key_cell)}")
+            warn(f"`key_column_width` should be at least {len(key_cell)}")
         if self.total_width is None:
             value_cell = value
         else:
             value_column_width = self.total_width - self.key_column_width
-            # Make sure the multiline stirng stays within its cell, by rewrapping
+            # Make sure the multiline string stays within its cell, by rewrapping
             # and prepending spaces to all but the first line.
             value_cell = rewrap(value, value_column_width).replace(
                 "\n", "\n" + " " * self.key_column_width
             )
 
-        echo(key_cell.ljust(self.key_column_width) + value_cell, raw=True)
+        echo(
+            key_cell.ljust(self.key_column_width),
+            raw=True,
+            color=StringColor.HARDCODED,
+            newline=False,
+        )
+        echo(value_cell, raw=True, color=value_color)
 
 
 def rewrap(multiline: str, width=70, **TextWrap_kwargs) -> str:
-    """Linearize string, and wrap the result.
+    """Linearize and strip string, and wrap the result.
 
     :param multiline:  A multiline string as found in indented source code.
     :param width:  Max number of characters per line in the output.

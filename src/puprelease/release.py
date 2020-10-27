@@ -4,15 +4,16 @@ from os import getenv
 from subprocess import list2cmdline, run
 from typing import Optional, Sequence
 
-from click import confirm, prompt
-
 from puprelease.util import (
     ExitSignal,
     KeyValueTable,
     MAX_LINEWIDTH,
+    confirm,
     echo,
     get_stripped_output,
+    prompt,
     step_title_printer,
+    StringColor,
 )
 
 
@@ -92,14 +93,16 @@ class Command:
 
     def check_and_run(self):
         step_title_printer.step(self.title)
-        table.print_row("Command", list2cmdline(self.args))
+        command_description_table.print_row("Command", list2cmdline(self.args))
         if self.description:
-            table.print_row("Description", self.description)
+            command_description_table.print_row(
+                "Description", self.description, value_color=StringColor.HARDCODED
+            )
         confirm("Execute?", default=True, abort=True)
         self.run()
 
     def run(self):
-        echo(list2cmdline(self.args))
+        echo("> " + list2cmdline(self.args), color=StringColor.DYNAMIC)
         completed_process = run(self.args)
         retcode = completed_process.returncode
         if retcode == 0:
