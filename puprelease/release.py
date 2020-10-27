@@ -5,6 +5,7 @@ from subprocess import list2cmdline, run
 from typing import Optional, Sequence
 
 from click import confirm, prompt
+
 from puprelease.util import (
     ExitSignal,
     KeyValueTable,
@@ -23,7 +24,9 @@ def new_release():
     step_title_printer.step("Preparing new release")
     confirm("Did you run testsuite locally?", default=True, abort=True)
     if is_versioned_with_git_tags():
-        desired_new_version = prompt("Please enter the new version number")
+        desired_new_version = prompt(
+            "Please enter the new version (without `v` prefix)"
+        )
         message = prompt(
             "Please enter a message to go along with the git tag",
             default=get_last_commit_message(),
