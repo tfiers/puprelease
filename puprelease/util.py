@@ -108,8 +108,8 @@ def rewrap(multiline: str, width=70, **TextWrap_kwargs) -> str:
 def linearize(multiline: str) -> str:
     """
     :param multiline:  A multiline string as found in indented source code.
-    :return:  A stripped, one-line string. All newlines and multiple
-            consecutive whitespace characters are replaced by a single space.
+    :return:  A stripped, one-line string. Each newline and sequence of consecutive
+              whitespace characters is replaced by a single space.
     """
     oneline = sub(r"\s+", " ", multiline)
     return oneline.strip()
