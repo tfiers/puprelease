@@ -23,16 +23,23 @@ PyPI_user = getenv("TWINE_USERNAME")
 def new_release():
     step_title_printer.step("Preparing new release")
     confirm("Did you run testsuite locally?", default=True, abort=True)
+
     if is_versioned_with_git_tags():
         desired_new_version = prompt(
             "Please enter the new version (without `v` prefix)"
         )
-        message = prompt(
-            "Please enter a message to go along with the git tag",
-            default=get_last_commit_message(),
-        )
         new_git_tag = f"v{desired_new_version}"
-        git_tag_command(new_git_tag, message).check_and_run()
+        if confirm(
+            "Do you want to annotate the new git tag with a message?", default=True
+        ):
+            message = prompt(
+                "Please enter a message to go along with the git tag",
+                default=get_last_commit_message(),
+            )
+            git_annotated_tag_command(new_git_tag, message).check_and_run()
+        else:
+            git_tag_command(new_git_tag).check_and_run()
+
         worktree_version = get_worktree_version()
         echo()
         echo(f'Version of package in worktree is now: "{worktree_version}"')
@@ -41,7 +48,9 @@ def new_release():
             echo("Removing added tag and quitting")
             revert_tag_command(new_git_tag).run()
             raise ExitSignal
+
         push_tag_command.check_and_run()
+
     create_dists_command.check_and_run()
     publish_command.check_and_run()
     echo("Congrats on the new release")
@@ -94,9 +103,17 @@ class Command:
             echo(f"Command completed with return code {retcode}")
 
 
-def git_tag_command(new_version, message):
+def git_tag_command(new_version):
     return Command(
         title="Create tag",
+        args=("git", "tag", new_version),
+        description=("""Create a bare git tag on the current commit."""),
+    )
+
+
+def git_annotated_tag_command(new_version, message):
+    return Command(
+        title="Create tag with message",
         args=("git", "tag", "-a", new_version, "--message", message),
         description=(
             """Create a git tag on the current commit. (Option "-a" makes an
