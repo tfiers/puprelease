@@ -21,10 +21,11 @@ setup(
         "Operating System :: OS Independent",
     ],
     entry_points={"console_scripts": ["pup=puprelease.pup:pup"]},
-    packages=find_packages(),
+    packages=find_packages("src"),
+    package_dir={"": "src"},  # (`""` is the "root" package).
     install_requires=[
-        "click ~=7.0",
-        "requests ~=2.0",
+        "click ~= 7.0",
+        "requests ~= 2.0",
         "twine",
         "setuptools_scm",
         "colorama",  # Only needed on Windows.

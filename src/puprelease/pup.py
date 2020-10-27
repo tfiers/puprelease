@@ -1,13 +1,15 @@
 import click
+
 from puprelease.check import check_package
 from puprelease.release import new_release
-from puprelease.util import ExitSignal, echo, print_own_version
+from puprelease.util import ExitSignal, echo
+from puprelease import __version__
 
 
 @click.command()
 def pup():
     try:
-        print_own_version()
+        echo(f"This is puprelease version {__version__}")
         echo()
         echo(
             "This program can be safely stopped and restarted at any time: "

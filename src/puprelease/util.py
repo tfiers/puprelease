@@ -32,19 +32,6 @@ def get_stripped_output(cmd: Sequence[str]) -> str:
     return output.decode().strip()
 
 
-def print_own_version():
-    # fmt: off
-    try:
-        import puprelease
-        version = puprelease.__version__
-    except ModuleNotFoundError:
-        # puprelease is not installed; Running as a script
-        import setuptools_scm
-        version = setuptools_scm.get_version(root="..", relative_to=__file__)
-    echo(f"This is puprelease version {version}")
-    # fmt: on
-
-
 class StepTitlePrinter:
     def __init__(self):
         self.step_count = 1

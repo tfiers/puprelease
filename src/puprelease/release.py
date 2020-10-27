@@ -22,6 +22,7 @@ PyPI_user = getenv("TWINE_USERNAME")
 
 def new_release():
     step_title_printer.step("Preparing new release")
+    
     confirm("Did you run testsuite locally?", default=True, abort=True)
 
     if is_versioned_with_git_tags():
