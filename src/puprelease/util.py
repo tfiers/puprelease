@@ -14,7 +14,7 @@ MAX_LINEWIDTH = 75
 
 class StringColor(Enum):
     HARDCODED = "yellow"
-    DYNAMIC = "black"
+    DYNAMIC = "reset"  # Default, i.e. black (on white bg) or white (on black).
 
 
 @dataclass
