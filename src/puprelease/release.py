@@ -28,40 +28,10 @@ PyPI_user = getenv("TWINE_USERNAME")
 
 def new_release():
     step_title_printer.step("Preparing new release")
-
     confirm("Did you run testsuite locally?", default=True, abort=True)
-
     if is_versioned_with_git_tags():
-        desired_new_version = prompt(
-            "Please enter the new version (without `v` prefix)"
-        )
-        new_git_tag = f"v{desired_new_version}"
-        if confirm(
-            "Do you want to annotate the new git tag with a message?", default=True
-        ):
-            message = prompt(
-                "Please enter a message to go along with the git tag",
-                default=get_last_commit_message(),
-            )
-            git_annotated_tag_command(new_git_tag, message).check_and_run()
-        else:
-            git_tag_command(new_git_tag).check_and_run()
-
-        worktree_version = get_worktree_version()
-        echo()
-        echo(f'Version of package in worktree is now: "{worktree_version}"')
-        if worktree_version != desired_new_version:
-            echo("This does not match the desired new version")
-            echo("Removing added tag and quitting")
-            revert_tag_command(new_git_tag).run()
-            raise ExitSignal
-
-        push_tag_command.check_and_run()
-
-    if confirm("Clean old distributions?", default=True):
-        rmtree("dist")
-        rmtree("build")
-        echo("Removed `dist/` and `build/`")
+        add_git_tag()
+    clean_old_distributions()
     create_dists_command.check_and_run()
     publish_command.check_and_run()
     echo("Congrats on the new release")
@@ -82,12 +52,44 @@ def is_versioned_with_git_tags() -> bool:
     return "use_scm_version" in all_kwargs_in_setup_py
 
 
+def add_git_tag():
+    desired_new_version = prompt("Please enter the new version (without `v` prefix)")
+    new_git_tag = f"v{desired_new_version}"
+    if confirm("Do you want to annotate the new git tag with a message?", default=True):
+        message = prompt(
+            "Please enter a message to go along with the git tag",
+            default=get_last_commit_message(),
+        )
+        git_annotated_tag_command(new_git_tag, message).check_and_run()
+    else:
+        git_tag_command(new_git_tag).check_and_run()
+
+    worktree_version = get_worktree_version()
+    echo()
+    echo(f'Version of package in worktree is now: "{worktree_version}"')
+    if worktree_version != desired_new_version:
+        echo("This does not match the desired new version")
+        echo("Removing added tag and quitting")
+        revert_tag_command(new_git_tag).run()
+        raise ExitSignal
+
+    push_tag_command.check_and_run()
+
+
 def get_worktree_version():
     return get_stripped_output(("python", "setup.py", "--version"))
 
 
 def get_last_commit_message():
     return get_stripped_output(("git", "log", "-1", "--pretty=%B"))
+
+
+def clean_old_distributions():
+    step_title_printer.step("Clean old distributions")
+    if confirm("Remove `dist/` and `build/`?", default=True):
+        rmtree("dist")
+        rmtree("build")
+        echo("Done")
 
 
 @dataclass
