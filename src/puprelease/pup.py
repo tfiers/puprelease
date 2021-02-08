@@ -1,9 +1,9 @@
 import click
 
-from puprelease.check import check_package
-from puprelease.release import new_release
-from puprelease.util import ExitSignal, echo
-from puprelease import __version__
+from . import __version__
+from .check import check_package
+from .release import new_release
+from .util import ExitSignal, echo
 
 
 @click.command()

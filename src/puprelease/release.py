@@ -5,7 +5,7 @@ from shutil import rmtree
 from subprocess import list2cmdline, run
 from typing import Optional, Sequence
 
-from puprelease.util import (
+from .util import (
     ExitSignal,
     KeyValueTable,
     MAX_LINEWIDTH,

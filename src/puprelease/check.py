@@ -1,13 +1,14 @@
 from os import getcwd
 from os.path import exists
 
-from puprelease.util import (
+from requests import get
+
+from .util import (
     ExitSignal,
     KeyValueTable,
     get_stripped_output,
     step_title_printer,
 )
-from requests import get
 
 
 package_info_table = KeyValueTable(key_column_width=42)
