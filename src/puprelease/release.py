@@ -1,6 +1,7 @@
 from ast import keyword, parse, walk
 from dataclasses import dataclass
 from os import getenv
+from shutil import rmtree
 from subprocess import list2cmdline, run
 from typing import Optional, Sequence
 
@@ -57,6 +58,10 @@ def new_release():
 
         push_tag_command.check_and_run()
 
+    if confirm("Clean old distributions?", default=True):
+        rmtree("dist")
+        rmtree("build")
+        echo("Removed `dist/` and `build/`")
     create_dists_command.check_and_run()
     publish_command.check_and_run()
     echo("Congrats on the new release")
