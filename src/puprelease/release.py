@@ -91,8 +91,8 @@ def get_last_commit_message():
 def clean_old_distributions():
     step_title_printer.step("Clean old distributions")
     if confirm("Remove `dist/` and `build/`?", default=True):
-        rmtree("dist")
-        rmtree("build")
+        rmtree("dist", ignore_errors=True)  # It's okay if the directories don't exist.
+        rmtree("build", ignore_errors=True)
         echo("Done")
 
 
