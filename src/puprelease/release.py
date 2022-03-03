@@ -55,7 +55,11 @@ def is_versioned_with_git_tags() -> bool:
 def add_git_tag():
     desired_new_version = prompt("Please enter the new version (without `v` prefix)")
     new_git_tag = f"v{desired_new_version}"
-    if confirm("Do you want to annotate the new git tag with a message?", default=True):
+    confirmation_msg = (
+        "Do you want to annotate the new git tag with a message?\n"
+        "(You will be able to choose either the last commit message, or type a new one)."
+    )
+    if confirm(confirmation_msg, default=True):
         message = prompt(
             "Please enter a message to go along with the git tag",
             default=get_last_commit_message(),
