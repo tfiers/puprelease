@@ -24,7 +24,7 @@ setup(
     packages=find_packages("src"),
     package_dir={"": "src"},  # (`""` is the "root" package).
     install_requires=[
-        "click ~= 7.1",
+        "click >= 7.1",  # Major versions go fast and are not very breaking. Hence no `~`.
         "requests ~= 2.0",
         "twine",
         "setuptools_scm",
