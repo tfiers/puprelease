@@ -27,6 +27,7 @@ setup(
         "click >= 7.1",  # Major versions go fast and are not very breaking. Hence no `~`.
         "requests ~= 2.0",
         "twine",
+        "wheel",
         "setuptools_scm",
         "colorama; platform_system == 'Windows'",
     ],
