@@ -1,8 +1,13 @@
 # Puprelease
 
-Publishing a new version of your Python package has never been easier:
+A command-line script to guide you through the process of releasing a new version of your Python package on PyPI.
 
-![Screencast of pup making a new release](https://raw.githubusercontent.com/tfiers/puprelease/master/example.gif)
+The goal is not having to remember and manually type the different release steps and checks.
+
+## Example
+Screencast of making a new release with `pup`:
+
+<img src="https://raw.githubusercontent.com/tfiers/puprelease/master/example.gif" width=540px>
 
 
 ## Installation
@@ -10,19 +15,24 @@ Publishing a new version of your Python package has never been easier:
 $ pip install puprelease
 ```
 This will get you the
+
 [![latest version on PyPI](https://img.shields.io/pypi/v/puprelease.svg?label=latest%20version%20on%20PyPI:)](https://pypi.python.org/pypi/puprelease/)
+
+To update an existing installation to this version, use `pip install -U puprelease`.
 
 ## Usage
 In the root directory of the package you want to release a new version of
-(where your `setup.py` file is located):
+(i.e. where your `setup.py` file is located), run:
 ```
 $ pup
 ```
 Then follow along with the program.
 
+<br>
+
 ### Git tags for versioning 
 
-We recommend using git tags as the single-source-of-truth for package
+I recommend using git tags as the single-source-of-truth for package
 versions.
 
 To do this, add the following lines to your `setup.py`, replacing the
